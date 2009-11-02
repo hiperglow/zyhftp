@@ -188,7 +188,7 @@ public class FTPCommand {
 	public static final String EPRT = "EPRT";
 
 	/** The FTPCommand LPRT. */
-	public static final String LPRT = "LPRT";
+	public static final String COMMAND_NAME = "LPRT";
 
 	/** The FTPCommand EPSV. */
 	public static final String EPSV = "EPSV";

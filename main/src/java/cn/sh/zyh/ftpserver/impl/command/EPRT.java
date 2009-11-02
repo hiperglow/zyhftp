@@ -9,8 +9,8 @@ import cn.sh.zyh.ftpserver.impl.core.Messages;
 import cn.sh.zyh.ftpserver.impl.core.ResponseCode;
 import cn.sh.zyh.ftpserver.impl.utils.StringUtils;
 
-public class LPRT implements ICommand {
-	public static final String COMMAND_NAME = "LPRT";
+public class EPRT implements ICommand {
+	public static final String COMMAND_NAME = "EPRT";
 
 	public void execute(String line, StringTokenizer st, FtpSession session) {
 		if (!session.isLogin()) {
@@ -25,7 +25,7 @@ public class LPRT implements ICommand {
 			return;
 		}
 
-		final int dataPort = getLprtPort(st);
+		final int dataPort = getEprtPort(st);
 		if (dataPort == 0) {
 			session.reply(ResponseCode.SYNTAX_ERROR, Messages.getString(
 					MessageKeys.RESP_500_NOT_UNDERSTOOD, StringUtils
@@ -39,14 +39,15 @@ public class LPRT implements ICommand {
 	}
 
 	/**
-	 * Get port number from LPRT command. <br>
-	 * for example: LPRT 6,16,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,2,193,160 <br>
+	 * Get port number from EPRT command. <br>
+	 * EPRT command example: <br>
+	 * EPRT |1|132.235.1.2|6275|<br>
+	 * EPRT |2|1080::8:800:200C:417A|5282|<br>
 	 * 
 	 * @param st
-	 *            command line contained port number
-	 * @return port number
+	 * @return
 	 */
-	private int getLprtPort(final StringTokenizer st) {
+	private int getEprtPort(final StringTokenizer st) {
 		// get param of LPRT command
 		final String param = StringUtils.getNextToken(st, "");
 		if ("".equals(param)) {
@@ -54,34 +55,16 @@ public class LPRT implements ICommand {
 		}
 
 		// split param with ','
-		final StringTokenizer tokenizer = new StringTokenizer(param, ",");
-		if (getNextIntValue(tokenizer) != 6) {
+		final StringTokenizer tokenizer = new StringTokenizer(param, "|");
+		if (tokenizer.countTokens() != 3) {
 			return 0;
 		}
 
-		// skip ipv6 address
-		final int count = getNextIntValue(tokenizer);
-		if (count == -1 || count > tokenizer.countTokens()) {
-			return 0;
-		}
-		for (int i = 0; i < count; i++) {
-			tokenizer.nextToken();
-		}
+		// skip 2 tokens
+		tokenizer.nextToken();
+		tokenizer.nextToken();
 
-		// get port
-		final int portNo = getNextIntValue(tokenizer);
-		if (portNo == -1 || portNo != tokenizer.countTokens()) {
-			return 0;
-		}
-		int port = 0;
-		for (int i = 0; i < portNo; i++) {
-			final int p = getNextIntValue(tokenizer);
-			if (p == -1) {
-				return 0;
-			}
-			port = port | p << (portNo - i - 1) * 8;
-		}
-
+		final int port = getNextIntValue(tokenizer);
 		return port;
 	}
 
@@ -90,13 +73,11 @@ public class LPRT implements ICommand {
 		if (st.hasMoreTokens()) {
 			try {
 				value = Integer.parseInt(st.nextToken());
-				if (value < 0 || value > 255) {
-					return -1;
-				}
 			} catch (NumberFormatException ex) {
 				// ignore exception, error value
 			}
 		}
 		return value;
 	}
+
 }

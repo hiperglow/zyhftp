@@ -44,6 +44,8 @@ public class FtpSession {
 
 	private String dataType4Trans = "A";
 
+	private int dataPort = 0;
+
 	/**
 	 * The data transfer process responsible for transferring files to and from
 	 * the user.
@@ -207,5 +209,13 @@ public class FtpSession {
 
 	public void setDataType4Trans(final String dataType4Trans) {
 		this.dataType4Trans = dataType4Trans;
+	}
+
+	public int getDataPort() {
+		return dataPort;
+	}
+
+	public void setDataPort(int dataPort) {
+		this.dataPort = dataPort;
 	}
 }

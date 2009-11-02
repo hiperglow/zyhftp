@@ -9,8 +9,8 @@ import cn.sh.zyh.ftpserver.impl.core.Messages;
 import cn.sh.zyh.ftpserver.impl.core.ResponseCode;
 import cn.sh.zyh.ftpserver.impl.utils.StringUtils;
 
-public class LPRT implements ICommand {
-	public static final String COMMAND_NAME = "LPRT";
+public class PORT implements ICommand {
+	public static final String COMMAND_NAME = "PORT";
 
 	public void execute(String line, StringTokenizer st, FtpSession session) {
 		if (!session.isLogin()) {
@@ -25,7 +25,7 @@ public class LPRT implements ICommand {
 			return;
 		}
 
-		final int dataPort = getLprtPort(st);
+		final int dataPort = getPortPort(st);
 		if (dataPort == 0) {
 			session.reply(ResponseCode.SYNTAX_ERROR, Messages.getString(
 					MessageKeys.RESP_500_NOT_UNDERSTOOD, StringUtils
@@ -38,51 +38,25 @@ public class LPRT implements ICommand {
 		}
 	}
 
-	/**
-	 * Get port number from LPRT command. <br>
-	 * for example: LPRT 6,16,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,2,193,160 <br>
-	 * 
-	 * @param st
-	 *            command line contained port number
-	 * @return port number
-	 */
-	private int getLprtPort(final StringTokenizer st) {
+	private int getPortPort(final StringTokenizer st) {
 		// get param of LPRT command
 		final String param = StringUtils.getNextToken(st, "");
 		if ("".equals(param)) {
 			return 0;
 		}
-
 		// split param with ','
 		final StringTokenizer tokenizer = new StringTokenizer(param, ",");
-		if (getNextIntValue(tokenizer) != 6) {
+		if (tokenizer.countTokens() != 3) {
+			return 0;
+		}
+		st.nextToken();
+		final int p1 = getNextIntValue(tokenizer);
+		final int p2 = getNextIntValue(tokenizer);
+		if (p1 == -1 || p2 == -1) {
 			return 0;
 		}
 
-		// skip ipv6 address
-		final int count = getNextIntValue(tokenizer);
-		if (count == -1 || count > tokenizer.countTokens()) {
-			return 0;
-		}
-		for (int i = 0; i < count; i++) {
-			tokenizer.nextToken();
-		}
-
-		// get port
-		final int portNo = getNextIntValue(tokenizer);
-		if (portNo == -1 || portNo != tokenizer.countTokens()) {
-			return 0;
-		}
-		int port = 0;
-		for (int i = 0; i < portNo; i++) {
-			final int p = getNextIntValue(tokenizer);
-			if (p == -1) {
-				return 0;
-			}
-			port = port | p << (portNo - i - 1) * 8;
-		}
-
-		return port;
+		return (p1 << 8) | p2;
 	}
 
 	private int getNextIntValue(final StringTokenizer st) {
