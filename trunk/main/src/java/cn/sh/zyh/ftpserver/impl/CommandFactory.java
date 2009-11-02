@@ -1,6 +1,7 @@
 package cn.sh.zyh.ftpserver.impl;
 
 import cn.sh.zyh.ftpserver.impl.command.ABOR;
+import cn.sh.zyh.ftpserver.impl.command.EPRT;
 import cn.sh.zyh.ftpserver.impl.command.LPRT;
 import cn.sh.zyh.ftpserver.impl.command.PASS;
 import cn.sh.zyh.ftpserver.impl.command.QUIT;
@@ -30,6 +31,8 @@ public class CommandFactory {
 			return new ABOR();
 		} else if (LPRT.COMMAND_NAME.equalsIgnoreCase(name)) {
 			return new LPRT();
+		} else if (EPRT.COMMAND_NAME.equalsIgnoreCase(name)) {
+			return new EPRT();
 		}
 
 		return null;

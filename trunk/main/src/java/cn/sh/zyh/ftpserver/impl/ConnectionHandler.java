@@ -181,26 +181,7 @@ public class ConnectionHandler extends Thread {
 		 * @param st
 		 *            the string tokenizer.
 		 */
-	/*
-	 * private void handlePort(StringTokenizer st) {
-	 * 
-	 * if (isEpsvAll) { reply(ResponseCode.REQUESTED_EPSV_ALL_501,
-	 * Messages.getString( MessageKeys.RESP_501_AFTER_EPSV_ALL,
-	 * FTPCommand.PORT)); return; }
-	 * 
-	 * final String portStr = st.nextToken(); st = new StringTokenizer(portStr,
-	 * ","); // setDataPort st.nextToken(); st.nextToken(); st.nextToken();
-	 * st.nextToken(); final int p1 = Integer.parseInt(st.nextToken()); final
-	 * int p2 = Integer.parseInt(st.nextToken());
-	 * 
-	 * final int dataPort = (p1 << 8) | p2;
-	 * 
-	 * this.dataHandler.setDataPort(this.clientSocket.getInetAddress()
-	 * .getHostAddress(), dataPort); this.dataHandler.setPassive(false);
-	 * reply(ResponseCode.COMMAND_OK, Messages.getString(
-	 * MessageKeys.RESP_200_COMMAND_OK, FTPCommand.PORT)); }
-	 * 
-	 *//**
+	/**
 		 * Handle PASV command.
 		 * 
 		 * @throws CommandException
@@ -418,56 +399,8 @@ public class ConnectionHandler extends Thread {
 	 * 
 	 * this.dataHandler.sendList(filename, false, this.userAuthInfo); } // ipv6
 	 * cmd
-	 *//**
-		 * Handle EPRT command.
-		 * 
-		 * @param st
-		 *            the string tokenizer.
-		 */
-	/*
-	 * private void handleEprt(StringTokenizer st) { if (isEpsvAll) {
-	 * reply(ResponseCode.REQUESTED_EPSV_ALL_501, Messages.getString(
-	 * MessageKeys.RESP_501_AFTER_EPSV_ALL, FTPCommand.EPRT)); return; }
-	 * 
-	 * String portStr = st.nextToken(); portStr = portStr.substring(3,
-	 * portStr.length() - 1); st = new StringTokenizer(portStr, "|"); // final
-	 * String dataHost = st.nextToken(); st.nextToken(); final String dataHost =
-	 * this.clientSocket.getInetAddress() .getHostAddress(); final String
-	 * dataPort = st.nextToken(); this.dataHandler.setDataPort(dataHost,
-	 * Integer.parseInt(dataPort)); this.dataHandler.setPassive(false);
-	 * 
-	 * reply(ResponseCode.COMMAND_OK, Messages.getString(
-	 * MessageKeys.RESP_200_COMMAND_OK, FTPCommand.EPRT)); }
-	 * 
-	 *//**
-		 * Handle LPRT command.
-		 * 
-		 * @param st
-		 *            the string tokenizer.
-		 */
-	/*
-	 * private void handleLprt(final StringTokenizer st) {
-	 * 
-	 * if (isEpsvAll) { reply(ResponseCode.REQUESTED_EPSV_ALL_501,
-	 * Messages.getString( MessageKeys.RESP_501_AFTER_EPSV_ALL,
-	 * FTPCommand.LPRT)); return; }
-	 * 
-	 * final String portStr = st.nextToken(); // port final int lastDelimIdx =
-	 * portStr.lastIndexOf(',', portStr .lastIndexOf(',') - 1); final
-	 * StringTokenizer portst = new StringTokenizer(portStr.substring(
-	 * lastDelimIdx + 1, portStr.length()), ","); final int p1 =
-	 * Integer.parseInt(portst.nextToken()); final int p2 =
-	 * Integer.parseInt(portst.nextToken()); final int dataPort = (p1 << 8) |
-	 * p2;
-	 * 
-	 * final String dataHost = this.clientSocket.getInetAddress()
-	 * .getHostAddress();
-	 * 
-	 * this.dataHandler.setDataPort(dataHost, dataPort);
-	 * this.dataHandler.setPassive(false); reply(ResponseCode.COMMAND_OK,
-	 * Messages.getString( MessageKeys.RESP_200_COMMAND_OK, FTPCommand.LPRT)); }
-	 * 
-	 *//**
+	 */
+/**
 		 * Handle EPSV command.
 		 * 
 		 * @throws CommandException
