@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry path="main/src/java" kind="src"/>
+	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
+	<classpathentry path="F:/Java/ftpserver/common/lib/log4j-1.2.14.jar" kind="lib"/>
+	<classpathentry path="F:/Java/ftpserver/common/lib/slf4j-api-1.5.2.jar" kind="lib"/>
+	<classpathentry path="F:/Java/ftpserver/common/lib/concurrent.jar" kind="lib"/>
+	<classpathentry path="F:/Java/ftpserver/common/lib/commons-net-1.4.1.jar" kind="lib"/>
+	<classpathentry path="F:/Java/ftpserver/common/lib/slf4j-log4j12-1.5.2.jar" kind="lib"/>
+	<classpathentry path="ECLIPSE_HOME/plugins/jp.co.dgic.eclipse.jdt.djunit_0.8.2/djunit.jar" kind="var"/>
+	<classpathentry path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1" kind="con"/>
+	<classpathentry path="bin" kind="output"/>
+</classpath>
