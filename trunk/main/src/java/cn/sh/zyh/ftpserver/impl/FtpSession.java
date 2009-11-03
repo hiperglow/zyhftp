@@ -46,6 +46,10 @@ public class FtpSession {
 
 	private int dataPort = 0;
 
+	private boolean isPassiveMode = false;
+	
+	private String currentDirectory = "";
+
 	/**
 	 * The data transfer process responsible for transferring files to and from
 	 * the user.
@@ -129,6 +133,10 @@ public class FtpSession {
 
 	public String getClientIP() {
 		return clientSocket.getInetAddress().getHostAddress();
+	}
+	
+	public String getHostIP() {
+		return clientSocket.getLocalAddress().getHostAddress();
 	}
 
 	public Socket getClientSocket() {
@@ -217,5 +225,21 @@ public class FtpSession {
 
 	public void setDataPort(int dataPort) {
 		this.dataPort = dataPort;
+	}
+
+	public boolean isPassiveMode() {
+		return isPassiveMode;
+	}
+
+	public void setPassiveMode(boolean isPassiveMode) {
+		this.isPassiveMode = isPassiveMode;
+	}
+
+	public String getCurrentDirectory() {
+		return currentDirectory;
+	}
+
+	public void setCurrentDirectory(String currentDirectory) {
+		this.currentDirectory = currentDirectory;
 	}
 }

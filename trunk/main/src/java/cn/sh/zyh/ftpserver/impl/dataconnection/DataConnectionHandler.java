@@ -18,19 +18,25 @@
  */
 package cn.sh.zyh.ftpserver.impl.dataconnection;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ConnectException;
+import java.net.Socket;
+import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.sh.zyh.ftpserver.impl.core.CommandException;
+import cn.sh.zyh.ftpserver.impl.core.FileList;
 import cn.sh.zyh.ftpserver.impl.core.ListedFile;
-import cn.sh.zyh.ftpserver.impl.core.MessageKeys;
-import cn.sh.zyh.ftpserver.impl.core.Messages;
-import cn.sh.zyh.ftpserver.impl.core.ResponseCode;
+import cn.sh.zyh.ftpserver.impl.representation.Representation;
 
 /**
  * This is the server data transfer process. It is responsible for transferring
@@ -65,174 +71,157 @@ public class DataConnectionHandler extends AbstractDataConnectionHandler {
 	 * Opens the data connection, reads the data according to the current
 	 * transmission mode, representation type and structure, and writes it into
 	 * the local file "path".
-	 * 
-	 * @param session
-	 *            the session
-	 * 
-	 * @param configurationInfo
-	 *            the configuration info
-	 * 
-	 * @param authInfo
-	 *            the auth info.
-	 * 
-	 * @throws CommandException
-	 *             the command exception
-	 * @return true if the print operation is successful.
 	 */
-	public boolean receiveFile() throws CommandException {
-		boolean response = false;
+	public boolean receiveFile(String path) throws CommandException {
 		try {
+			File file = new File(path);
+			if (file.exists()) {
+				// remove the old one - overwrite is ok!
+				// throw new CommandException(550, "File exists in that
+				// location.");
+				file.delete();
+			}
+
 			connectToUser();
 
-			final StringBuffer sb = new StringBuffer();
-			sb.append("Opening ");
-			sb.append(this.representation.getName());
-			sb.append(" mode data connection");
-			final String docName = new String("docname");
-			if (!"".equals(docName)) {
-				sb.append(" for '");
-				sb.append(docName);
-				sb.append("'");
-			}
-			sb.append(".");
+			this.fos = new FileOutputStream(file);
 
-			// this.controlHandler.reply(150, sb.toString());
-
-			clientInStream = representation.getInputStream(dataSocket);
-
-		} catch (final ConnectException e) {
-			logger.warn(CLASS_NAME, "receiveFile", Messages
-					.getString(MessageKeys.RESP_425_NOT_DATA_CONN));
-			throw new CommandException(ResponseCode.CANT_OPEN_DATA_CONNECTION,
-					Messages.getString(MessageKeys.RESP_425_NOT_DATA_CONN));
-		} catch (final IOException e) {
-			logger.warn(CLASS_NAME, "receiveFile", Messages
-					.getString(MessageKeys.RESP_550_NOT_WRITE_TO_FILE));
-			throw new CommandException(550, Messages
-					.getString(MessageKeys.RESP_550_NOT_WRITE_TO_FILE));
+			// Read file contents.
+			//
+			// this.controlHandler.reply(150, "Opening "
+			// + this.representation.getName() + " mode data connection.");
+			receiveFile(this.dataSocket, this.fos, this.representation);
+			return true;
+		} catch (ConnectException e) {
+			throw new CommandException(425, "Can't open data connection.");
+		} catch (IOException e) {
+			throw new CommandException(550, "Can't write to file");
 		} finally {
-			terminateClientInStream();
+			terminateOutputStream();
 			terminateDataConnection();
 			terminatePassiveServerSocket();
 		}
-		return response;
+	}
+
+	/**
+	 * Reads the contents of the file from "in", and writes the data to the
+	 * given socket using the specified representation.
+	 */
+	private void sendFile(InputStream in, Socket s,
+			Representation representation) throws IOException {
+		OutputStream out = representation.getOutputStream(s);
+		byte buf[] = new byte[4096];
+		int nread;
+		while ((nread = in.read(buf)) > 0) {
+			out.write(buf, 0, nread);
+		}
+		out.close();
+	}
+
+	/**
+	 * Reads data from the given socket and converts it from the specified
+	 * representation to local representation, writing the result to a file via
+	 * "out".
+	 */
+	private void receiveFile(Socket s, OutputStream out,
+			Representation representation) throws IOException {
+		InputStream in = representation.getInputStream(s);
+		byte buf[] = new byte[4096];
+		int nread;
+		while ((nread = in.read(buf, 0, 4096)) > 0) {
+			out.write(buf, 0, nread);
+		}
+		in.close();
 	}
 
 	/**
 	 * Opens the data connection reads the specified local file and writes it to
 	 * the data socket using the current transmission mode, representation type
 	 * and structure.
-	 * 
-	 * @param filename
-	 *            the filename
-	 * @param virtualFlie
-	 *            the virtual flie
-	 * 
-	 * @throws CommandException
-	 *             the command exception
 	 */
-	public void sendFile(final String filename, final String virtualFlie)
-			throws CommandException {
+	public boolean sendFile(String path) throws CommandException {
 		try {
+			File file = new File(path);
+			if (!file.isFile()) {
+				throw new CommandException(550, "Not a plain file.");
+			}
+
+			this.fis = new FileInputStream(file);
+
 			connectToUser();
 
 			// Send file contents.
 			//
-			// this.controlHandler.reply(150, "Opening "
-			// + this.representation.getName()
-			// + " mode data connection for '" + filename + "'.");
-
-			// TODO use ascii beacuse of txt file
-			final OutputStream out = representation.getOutputStream(dataSocket);
-			clientWriter = new PrintWriter(out);
-
-			clientWriter.write(virtualFlie);
-			clientWriter.flush();
-		} catch (final ConnectException e) {
-			logger.warn(CLASS_NAME, "sendFile", Messages
-					.getString(MessageKeys.RESP_425_NOT_DATA_CONN));
-			throw new CommandException(425, Messages
-					.getString(MessageKeys.RESP_425_NOT_DATA_CONN));
-		} catch (final IOException e) {
-			logger.warn(CLASS_NAME, "sendFile", Messages
-					.getString(MessageKeys.RESP_530_NOT_REGULAR_FILE)
-					+ e);
-			throw new CommandException(553, Messages
-					.getString(MessageKeys.RESP_530_NOT_REGULAR_FILE));
+			//this.controlHandler.reply(150, "Opening "
+			//		+ this.representation.getName() + " mode data connection.");
+			sendFile(this.fis, this.dataSocket, this.representation);
+			return true;
+		} catch (FileNotFoundException e) {
+			throw new CommandException(550, "No such file.");
+		} catch (ConnectException e) {
+			throw new CommandException(425, "Can't open data connection.");
+		} catch (IOException e) {
+			throw new CommandException(553, "Not a regular file.");
 		} finally {
-			terminateClientWriter();
+			terminateInputStream();
 			terminateDataConnection();
 		}
 	}
 
-	/**
-	 * Send list.
-	 * 
-	 * @param filename
-	 *            the filename
-	 * @param longFormat
-	 *            the long format
-	 * @param authInfo
-	 *            the auth info.
-	 * 
-	 * @throws CommandException
-	 *             the command exception
-	 */
-	public void sendList(final String filename, final boolean longFormat)
+	public int sendNameList(FileList fileList) throws CommandException {
+		return sendList(fileList, false);
+	}
+
+	public int sendList(FileList fileList) throws CommandException {
+		return sendList(fileList, true);
+	}
+
+	public int sendList(FileList fileList, boolean longFormat)
 			throws CommandException {
+		int reply = 0;
 		try {
+			int numFiles = fileList != null ? fileList.size() : 0;
+
 			connectToUser();
-			// TODO AsciiRepresentation list
-			clientWriter = new PrintWriter(representation
+			//this.representation = getNewRepresentation(Representation.TYPE_ASCII);
+			PrintWriter writer = new PrintWriter(this.representation
 					.getOutputStream(this.dataSocket));
 
-			final ListedFile listedFile = new ListedFile();
-
-			if (!"/".equals(filename) && !filename.startsWith("-")
-					&& !listedFile.isExist(filename)) {
-				logger.warn(CLASS_NAME, "sendList", filename
-						+ ": No such file or directory.");
-				throw new CommandException(550, filename
-						+ ": No such file or directory.");
-			}
-
 			// Send long file list.
-			// this.controlHandler.reply(150, "Opening "
-			// + this.representation.getName()
-			// + " mode data connection for '" + filename + "'.");
+			//this.controlHandler.reply(150, "Opening "
+			//		+ this.representation.getName() + " mode data connection.");
 
-			if (longFormat) {
-				clientWriter.write(listedFile.getFtpString(filename));
-			} else {
-				clientWriter.write(listedFile.getFtpNameOnlyString(filename));
+			// Print the total number of files.
+			writer.print("total " + numFiles + "\n");
+
+			if (fileList != null) {
+				Iterator iter = fileList.iterator();
+				while (iter.hasNext()) {
+					ListedFile curFile = (ListedFile) iter.next();
+					if (longFormat) {
+						writer.write(curFile.toFtpString());
+					} else {
+						writer.write(curFile.toFtpNameOnlyString());
+					}
+				}
 			}
+			writer.flush();
 
-			clientWriter.flush();
-
-			// this.controlHandler.reply(ResponseCode.CLOSING_DATA_CONNECTION,
-			// Messages.getString(MessageKeys.RESP_226_TRANSFER_COMPLETE));
-		} catch (final ConnectException e) {
-			logger.warn(CLASS_NAME, "sendList", Messages
-					.getString(MessageKeys.RESP_425_NOT_DATA_CONN));
-			throw new CommandException(425, Messages
-					.getString(MessageKeys.RESP_425_NOT_DATA_CONN));
-		} catch (final IOException e) {
-			logger.warn(CLASS_NAME, "sendList", Messages
-					.getString(MessageKeys.RESP_500_EXCEPTION));
-			throw new CommandException(550, Messages
-					.getString(MessageKeys.RESP_500_EXCEPTION));
+			//reply = this.controlHandler.reply(226, "Transfer complete.");
+		} catch (ConnectException e) {
+			throw new CommandException(425, "Can't open data connection.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new CommandException(550, "No such directory.");
 		} finally {
-			terminateClientWriter();
 			terminateDataConnection();
 		}
+		return reply;
 	}
 
-	/**
-	 * Abort transfer.
-	 */
-	public void abortTransfer() {
-		this.terminateClientWriter();
-		this.terminateClientInStream();
+	public void abortTransfer() throws IOException {
+		this.terminateInputStream();
+		this.terminateOutputStream();
 		this.terminateDataConnection();
 		this.terminatePassiveServerSocket();
 	}

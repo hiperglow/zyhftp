@@ -32,7 +32,7 @@ public class PORT implements ICommand {
 							.formatReplyMsg(COMMAND_NAME, line)));
 		} else {
 			session.setDataPort(dataPort);
-			// this.dataHandler.setPassive(false);
+			session.setPassiveMode(false);
 			session.reply(ResponseCode.COMMAND_OK, Messages.getString(
 					MessageKeys.RESP_200_COMMAND_OK, COMMAND_NAME));
 		}
@@ -50,6 +50,8 @@ public class PORT implements ICommand {
 			return 0;
 		}
 		st.nextToken();
+		
+		// get port
 		final int p1 = getNextIntValue(tokenizer);
 		final int p2 = getNextIntValue(tokenizer);
 		if (p1 == -1 || p2 == -1) {
