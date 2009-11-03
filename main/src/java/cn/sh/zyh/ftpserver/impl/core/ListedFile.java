@@ -1,6 +1,3 @@
-///////////////////////////////////////////////////////////////////
-// Copyright:2009 by RICOH COMPANY, LTD. All Rights Reserved
-///////////////////////////////////////////////////////////////////
 /*
  * Copyright 2005 XJFTP Team (http://xjftp.sourceforge.net/)
  * 
@@ -20,124 +17,136 @@ package cn.sh.zyh.ftpserver.impl.core;
 
 import java.util.Date;
 
-import cn.sh.zyh.ftpserver.api.Configuration;
 import cn.sh.zyh.ftpserver.impl.utils.StringUtils;
 
 /**
- * I represent a single file on a server. My toString() method prints out the
- * details of me using the FTP compatible unix-style format.
+ * I represent a single file on a server. My toString() method
+ * prints out the details of me using the FTP compatible unix-style format.
  * <p>
  * Copyright &copy; 2005 <a href="http://xjftp.sourceforge.net/">XJFTP Team</a>.
- * All rights reserved. Use is subject to <a
- * href="http://xjftp.sourceforge.net/LICENSE.TXT">licence terms</a> (<a
- * href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License v2.0</a>)<br/>
+ * All rights reserved. Use is subject to <a href="http://xjftp.sourceforge.net/LICENSE.TXT">licence terms</a> (<a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License v2.0</a>)<br/>
  * <p>
  * Last modified: $Date: 2005/01/21 00:03:30 $, by $Author: mmcnamee $
  * <p>
- * 
- * @author Mark McNamee (<a
- *         href="mailto:mmcnamee@users.sourceforge.net">mmcnamee at
- *         users.sourceforge.net</a>)
+ * @author Mark McNamee (<a href="mailto:mmcnamee@users.sourceforge.net">mmcnamee at users.sourceforge.net</a>)
  * @version $Revision: 1.2 $
  */
 public final class ListedFile {
 
-	/**
-	 * The file list.
-	 */
-	private final String[] fileList = { "help", "info", "prnlog", "stat" };
+    // If we send \n (Unix format) then the FTP client expects the listing 
+    // to be in UNIX format also, which works nicely!!
+    public final static String NEWLINE  = "\n";
 
-	/**
-	 * The file list with admin.
-	 */
-	private final String[] fileListAdmin = { "help", "info", "stat" };
+    //"-rw-rw-rw-   1 user     group           0 000 00 00:00 INVOICE-11223344.xml"
+    
+    private final String permissions;
+    private final boolean isFile;
+    private final String user;
+    private final String group;
+    private final String length;
+    private final String date;
+    private final String name;
+    
+    public ListedFile(String name) {
+        this(null, true, "user", "group", "1", null, name);
+    }
+    
+    public ListedFile(String name, String length) {
+        this(null, true, "user", "group", length, null, name);
+    }
+    
+    public ListedFile(final String permissions, final String name, final boolean isFile, final String user, final String group, final String length, final Date date) {
+        this(permissions, isFile, user, group, length, StringUtils.formatUnixFileListing(date), name);
+    }
+    
+    public ListedFile(final String permissions, final boolean isFile, final String user, final String group, final String length, final String date, final String name) {
+        super();
+        
+        if (permissions == null || permissions.length() != 9) {
+            this.permissions = "rw-------";
+        } else {
+            this.permissions = permissions;
+        }
+        
+        this.isFile = isFile;
+        this.user = user;
+        this.group = group;
+        this.length = length;
+        
+        if (date == null || date.length() != 12) {
+            this.date = StringUtils.formatUnixFileListing(new Date());
+        } else {
+            this.date = date;
+        }
+        
+        this.name = name;
+    }
 
-	/**
-	 * Instantiates a new listed file.
-	 * 
-	 * @param authInfo
-	 *            the auth info
-	 */
-	public ListedFile() {
-	}
+    public String getDate() {
+        return this.date;
+    }
+    
+    public String getGroup() {
+        return this.group;
+    }
+    
+    public boolean isFile() {
+        return this.isFile;
+    }
+    
+    public String getLength() {
+        return this.length;
+    }
+    
+    public String getName() {
+        return this.name;
+    }
+    
+    public String getPermissions() {
+        return this.permissions;
+    }
+    
+    public String getUser() {
+        return this.user;
+    }
+    
+    public String toString() {
+        return toFtpString();
+    }
 
-	/**
-	 * Checks if filename is exist.
-	 * 
-	 * @param filename
-	 *            the filename
-	 * 
-	 * @return true, if is exist
-	 */
-	public boolean isExist(final String filename) {
-		String[] virtualList = null;
-
-		virtualList = fileList;
-
-		for (int i = 0; i < virtualList.length; i++) {
-			if (virtualList[i].equals(filename)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Gets the ftp string.
-	 * 
-	 * @param filename
-	 *            the filename
-	 * 
-	 * @return the ftp string
-	 */
-	public String getFtpString(final String filename) {
-		StringBuffer sb = new StringBuffer();
-		sb.append("-r--r--r-- root root 200 ");
-		sb.append(StringUtils.formatUnixFileListing(new Date()));// date
-		sb.append(' ');
-		final String pre = sb.toString();
-		sb = new StringBuffer();
-		String[] virtualList = null;
-
-		virtualList = fileList;
-
-		if ("/".equals(filename) || filename.startsWith("-")) {
-			for (int i = 0; i < virtualList.length; i++) {
-				sb.append(pre);
-				sb.append(virtualList[i]);
-				sb.append(Configuration.NEWLINE);
-			}
-
-		} else {
-			sb.append(pre);
-			sb.append(filename);
-			sb.append(Configuration.NEWLINE);
-		}
-
-		return sb.toString();
-	}
-
-	/**
-	 * Gets the ftp name only string.
-	 * 
-	 * @param filename
-	 *            the filename.
-	 * 
-	 * @return the ftp name only string
-	 */
-	public String getFtpNameOnlyString(final String filename) {
-		final StringBuffer sb = new StringBuffer();
-		String[] virtualList = null;
-
-		if ("/".equals(filename) || filename.startsWith("-")) {
-			for (int i = 0; i < virtualList.length; i++) {
-				sb.append(virtualList[i]);
-				sb.append(Configuration.NEWLINE);
-			}
-		} else {
-			sb.append(filename);
-			sb.append(Configuration.NEWLINE);
-		}
-		return sb.toString();
-	}
+    /**
+     * Return the list of this file in Unix format (fixed length delimited)
+     * "-rw-rw-rw-   1 user     group           0 000 00 00:00 INVOICE-11223344.xml"
+     */
+    public String toFtpString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(isFile() ? '-' : 'd');
+        sb.append(this.permissions);
+        sb.append("   ");
+        sb.append(isFile() ? '1' : '3');
+        sb.append(' ');
+        sb.append(StringUtils.pad(this.user, ' ', true, 8));
+        sb.append(' ');
+        sb.append(StringUtils.pad(this.group, ' ', true, 8));
+        sb.append(' ');
+        sb.append(StringUtils.pad(this.length, ' ', false, 8));
+        sb.append(' ');
+        sb.append(this.date);
+        sb.append(' ');
+        sb.append(this.name);
+        sb.append(NEWLINE);
+        return sb.toString();        
+    }
+    
+    public String toFtpNameOnlyString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(this.name);
+        sb.append(NEWLINE);
+        return sb.toString();        
+    }
+    
+    public String simpleToString() {
+        return this.name + NEWLINE;
+    }
+    
 }

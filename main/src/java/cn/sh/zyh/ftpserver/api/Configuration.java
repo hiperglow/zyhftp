@@ -21,7 +21,7 @@ public class Configuration {
 	public final static int MAX_CONNECTION_NUMBER = 20;
 
 	/** The port of FTP server for user connection. */
-	public final static int PORT = 21;
+	public final static int PORT = 2121;
 
 	/** The port of FTP server for data connection. */
 	public final static int LOCAL_PORT = 20;
@@ -34,6 +34,8 @@ public class Configuration {
 
 	/** The new line constant. */
 	public final static String NEWLINE = "\n";
+	
+	public final static String ROOT_DIR = "D:/apmxe";
 
 	/**
 	 * The internal constructor, do not use directly. Use method getInstance

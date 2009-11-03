@@ -20,7 +20,7 @@ package cn.sh.zyh.ftpserver.impl.dataconnection;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -77,10 +77,10 @@ public abstract class AbstractDataConnectionHandler {
 	protected Socket dataSocket;
 
 	/** The client writer. */
-	protected PrintWriter clientWriter = null;
+	protected OutputStream fos = null;
 
 	/** The client in stream. */
-	protected InputStream clientInStream = null;
+	protected InputStream fis = null;
 
 	/** The flag of passive mode. */
 	protected boolean passive = false;
@@ -157,13 +157,13 @@ public abstract class AbstractDataConnectionHandler {
 	/**
 	 * Terminate client input stream.
 	 */
-	protected void terminateClientInStream() {
-		if (this.clientInStream != null) {
+	protected void terminateInputStream() {
+		if (this.fis != null) {
 			try {
 				if (this.dataSocket != null && !this.dataSocket.isClosed()) {
 					this.dataSocket.shutdownInput();
 				}
-				this.clientInStream.close();
+				this.fis.close();
 			} catch (final IOException e) {
 				logger.warn(CLASS_NAME, "terminateClientInStream",
 						"Exception in close connection");
@@ -262,10 +262,14 @@ public abstract class AbstractDataConnectionHandler {
 	/**
 	 * Terminate client writer.
 	 */
-	protected void terminateClientWriter() {
-		if (this.clientWriter != null) {
-			clientWriter.close();
-			clientWriter = null;
+	protected void terminateOutputStream() {
+		if (this.fos != null) {
+			try {
+				fos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			fos = null;
 		}
 	}
 

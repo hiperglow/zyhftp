@@ -32,7 +32,7 @@ public class EPRT implements ICommand {
 							.formatReplyMsg(COMMAND_NAME, line)));
 		} else {
 			session.setDataPort(dataPort);
-			// this.dataHandler.setPassive(false);
+			session.setPassiveMode(false);
 			session.reply(ResponseCode.COMMAND_OK, Messages.getString(
 					MessageKeys.RESP_200_COMMAND_OK, COMMAND_NAME));
 		}

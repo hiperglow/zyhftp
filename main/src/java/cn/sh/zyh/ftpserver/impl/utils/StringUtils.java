@@ -20,7 +20,11 @@ package cn.sh.zyh.ftpserver.impl.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.Stack;
 import java.util.StringTokenizer;
+
+import cn.sh.zyh.ftpserver.api.Configuration;
 
 /**
  * I contain a load of helper methods for String manipulation, including
@@ -107,6 +111,32 @@ public class StringUtils {
 	}
 
 	/**
+	 * Pad string object
+	 */
+	public static String pad(String src, char padChar, boolean rightPad,
+			int totalLength) {
+
+		if (src == null) {
+			src = "";
+		}
+		int srcLength = src.length();
+		if (srcLength >= totalLength) {
+			return src;
+		}
+
+		int padLength = totalLength - srcLength;
+		StringBuffer sb = new StringBuffer(padLength);
+		for (int i = 0; i < padLength; ++i) {
+			sb.append(padChar);
+		}
+
+		if (rightPad) {
+			return src + sb.toString();
+		}
+		return sb.toString() + src;
+	}
+
+	/**
 	 * Gets the next token.
 	 * 
 	 * @param st
@@ -132,5 +162,67 @@ public class StringUtils {
 		}
 
 		return cmd + param;
+	}
+
+	/**
+	 * Creates a native absolute path from a path string sent from the client.
+	 * The absolute path constructed will always be prefixed with baseDir. If
+	 * ftpPath does not begin with a '/', the constructed path will also be
+	 * relativee to currentDir.
+	 */
+	public static String createNativePath(String ftpPath, String curDir) {
+		String path = null;
+		if (ftpPath.charAt(0) == '/') {
+			path = Configuration.ROOT_DIR + ftpPath;
+		} else {
+			path = Configuration.ROOT_DIR + curDir + "/" + ftpPath;
+		}
+		return path;
+	}
+
+	/**
+	 * Resolves an FTP given by the client. Relative paths will be resolved
+	 * relative to currentDir. '.' path segments will be removed, and '..' path
+	 * segments will pop the previous segment of the path stack (if there is a
+	 * previous segment).
+	 */
+	public static String resolvePath(String path, String curDir) {
+		if (path.charAt(0) != '/') {
+			// path = "/" + path; // mozilla etc are a bit rubbish!
+			path = curDir + "/" + path;
+		}
+
+		// Stop recursing madness (../../../ etc!!)
+		// Mozilla will still display ../../../ as it doesn't call to the server
+		// to do PWD to work out where it is!
+		if ("/../".equals(path)) {
+			path = "/";
+		}
+
+		StringTokenizer pathSt = new StringTokenizer(path, "/");
+		Stack<String> segments = new Stack<String>();
+		while (pathSt.hasMoreTokens()) {
+			String segment = pathSt.nextToken();
+			if (segment.equals("..")) {
+				if (!segments.empty()) {
+					segments.pop();
+				}
+			} else if (segment.equals(".")) {
+				// skip
+			} else {
+				segments.push(segment);
+			}
+		}
+
+		StringBuffer pathBuf = new StringBuffer("/");
+		Enumeration segmentsEn = segments.elements();
+		while (segmentsEn.hasMoreElements()) {
+			pathBuf.append(segmentsEn.nextElement());
+			if (segmentsEn.hasMoreElements()) {
+				pathBuf.append("/");
+			}
+		}
+
+		return pathBuf.toString();
 	}
 }
