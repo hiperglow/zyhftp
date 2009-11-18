@@ -33,9 +33,8 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cn.sh.zyh.ftpserver.impl.command.list.FtpFile;
 import cn.sh.zyh.ftpserver.impl.core.CommandException;
-import cn.sh.zyh.ftpserver.impl.core.FileList;
-import cn.sh.zyh.ftpserver.impl.core.ListedFile;
 import cn.sh.zyh.ftpserver.impl.representation.Representation;
 
 /**
@@ -82,7 +81,7 @@ public class DataConnectionHandler extends AbstractDataConnectionHandler {
 				file.delete();
 			}
 
-			connectToUser();
+			// connectToUser();
 
 			this.fos = new FileOutputStream(file);
 
@@ -148,12 +147,12 @@ public class DataConnectionHandler extends AbstractDataConnectionHandler {
 
 			this.fis = new FileInputStream(file);
 
-			connectToUser();
+			// connectToUser();
 
 			// Send file contents.
 			//
-			//this.controlHandler.reply(150, "Opening "
-			//		+ this.representation.getName() + " mode data connection.");
+			// this.controlHandler.reply(150, "Opening "
+			// + this.representation.getName() + " mode data connection.");
 			sendFile(this.fis, this.dataSocket, this.representation);
 			return true;
 		} catch (FileNotFoundException e) {
@@ -168,58 +167,29 @@ public class DataConnectionHandler extends AbstractDataConnectionHandler {
 		}
 	}
 
-	public int sendNameList(FileList fileList) throws CommandException {
-		return sendList(fileList, false);
-	}
-
-	public int sendList(FileList fileList) throws CommandException {
-		return sendList(fileList, true);
-	}
-
-	public int sendList(FileList fileList, boolean longFormat)
-			throws CommandException {
-		int reply = 0;
+	public void sendFiles(Socket dataSocket,
+			final Representation representation, final String filesInfo) {
 		try {
-			int numFiles = fileList != null ? fileList.size() : 0;
+			PrintWriter writer = new PrintWriter(representation
+					.getOutputStream(dataSocket));
 
-			connectToUser();
-			//this.representation = getNewRepresentation(Representation.TYPE_ASCII);
-			PrintWriter writer = new PrintWriter(this.representation
-					.getOutputStream(this.dataSocket));
-
-			// Send long file list.
-			//this.controlHandler.reply(150, "Opening "
-			//		+ this.representation.getName() + " mode data connection.");
-
-			// Print the total number of files.
-			writer.print("total " + numFiles + "\n");
-
-			if (fileList != null) {
-				Iterator iter = fileList.iterator();
-				while (iter.hasNext()) {
-					ListedFile curFile = (ListedFile) iter.next();
-					if (longFormat) {
-						writer.write(curFile.toFtpString());
-					} else {
-						writer.write(curFile.toFtpNameOnlyString());
-					}
-				}
-			}
+			writer.write(filesInfo);
 			writer.flush();
-
-			//reply = this.controlHandler.reply(226, "Transfer complete.");
-		} catch (ConnectException e) {
-			throw new CommandException(425, "Can't open data connection.");
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new CommandException(550, "No such directory.");
 		} finally {
-			terminateDataConnection();
+			if (dataSocket.isConnected()) {
+				try {
+					dataSocket.close();
+				} catch (final IOException e) {
+					logger.warn("Exception in close connection");
+				}
+			}
+			dataSocket = null;
 		}
-		return reply;
 	}
 
-	public void abortTransfer() throws IOException {
+	public void abortTransfer() {
 		this.terminateInputStream();
 		this.terminateOutputStream();
 		this.terminateDataConnection();

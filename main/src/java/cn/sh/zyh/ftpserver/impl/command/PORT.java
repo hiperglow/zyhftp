@@ -44,13 +44,18 @@ public class PORT implements ICommand {
 		if ("".equals(param)) {
 			return 0;
 		}
-		// split param with ','
+		// split param with ',' PORT 127,0,0,1,13,225
 		final StringTokenizer tokenizer = new StringTokenizer(param, ",");
-		if (tokenizer.countTokens() != 3) {
+		if (tokenizer.countTokens() != 6) {
 			return 0;
 		}
-		st.nextToken();
-		
+
+		// skip ip address
+		tokenizer.nextToken();
+		tokenizer.nextToken();
+		tokenizer.nextToken();
+		tokenizer.nextToken();
+
 		// get port
 		final int p1 = getNextIntValue(tokenizer);
 		final int p2 = getNextIntValue(tokenizer);
@@ -63,15 +68,13 @@ public class PORT implements ICommand {
 
 	private int getNextIntValue(final StringTokenizer st) {
 		int value = -1;
-		if (st.hasMoreTokens()) {
-			try {
-				value = Integer.parseInt(st.nextToken());
-				if (value < 0 || value > 255) {
-					return -1;
-				}
-			} catch (NumberFormatException ex) {
-				// ignore exception, error value
+		try {
+			value = Integer.parseInt(st.nextToken());
+			if (value < 0 || value > 255) {
+				return -1;
 			}
+		} catch (NumberFormatException ex) {
+			// ignore exception, error value
 		}
 		return value;
 	}
