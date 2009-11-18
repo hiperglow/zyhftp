@@ -2,7 +2,6 @@ package cn.sh.zyh.ftpserver.impl.command;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.Socket;
 import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
@@ -73,17 +72,23 @@ public class LIST implements ICommand {
 
 		// connect to client
 		DataConnectionHandler handler = new DataConnectionHandler();
-		Socket dataSocket = null;
-		try {
-			dataSocket = handler.connectToClient(session.getClientIP(), session
-					.getDataPort());
-
-			logger.debug("connect to client: ip " + session.getClientIP()
-					+ " port" + session.getDataPort());
-		} catch (IOException e) {
-			// reply message to client
-			session.reply(501, "Error in data connection.");
-			return;
+		if (session.isPassiveMode()) {
+			try {
+				handler.waitForClient();
+			} catch (IOException e) {
+				// TODO reply message to client
+				session.reply(501, "Error in data connection.");
+				return;
+			}
+		} else {
+			try {
+				handler.connectToClient(session.getClientIP(), session
+						.getDataPort());
+			} catch (IOException e) {
+				// TODO reply message to client
+				session.reply(501, "Error in data connection.");
+				return;
+			}
 		}
 
 		// reply message to client
@@ -97,12 +102,10 @@ public class LIST implements ICommand {
 			representation = BinaryRepresentation.getInstance();
 		}
 
-		logger.debug("dataSocket: " + dataSocket);
-
 		// send info
-		handler.sendFiles(dataSocket, representation, filesInfo);
-		session.reply(226, "Transfer complete.");
+		handler.sendData(representation, filesInfo);
 
+		session.reply(226, "Transfer complete.");
 	}
 
 	private boolean doesExist(final String path) {
