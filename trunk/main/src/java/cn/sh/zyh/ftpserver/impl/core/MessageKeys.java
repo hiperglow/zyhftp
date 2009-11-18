@@ -124,7 +124,7 @@ public class MessageKeys {
 	public static final String RESP_550_COULD_NOT_DELE = "response.550.could.not.dele";
 
 	/** The Constant RESP_550_NO_SUCH_DIR. */
-	public static final String RESP_550_NO_SUCH_DIR = "response.550.no.such.dir";
+	public static final String RESP_550_DIR_NOT_FOUND = "response.550.dir.not.found";
 
 	/** The Constant RESP_550_NOT_A_DIR. */
 	public static final String RESP_550_NOT_A_DIR = "response.550.not.a.dir";
@@ -156,4 +156,6 @@ public class MessageKeys {
 	/** The Constant RESP_550_NO_SUCH_FILE. */
 	public static final String RESP_550_NO_SUCH_FILE = "response.550.no.such.file";
 	
+	/** The Constant RESP_501_SYNTAX_ERROR. */
+	public static final String RESP_501_SYNTAX_ERROR = "response.501.syntax.error";
 }

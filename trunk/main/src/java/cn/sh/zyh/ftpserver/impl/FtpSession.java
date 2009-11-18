@@ -48,7 +48,7 @@ public class FtpSession {
 
 	private boolean isPassiveMode = false;
 	
-	private String currentDirectory = "";
+	private String currentDirectory = "/";
 
 	/**
 	 * The data transfer process responsible for transferring files to and from
@@ -212,7 +212,11 @@ public class FtpSession {
 	}
 
 	public String getDataType4Trans() {
-		return dataType4Trans;
+		if("A".equals(dataType4Trans)) {
+			return "ASCII";
+		} else {
+			return "BINARY";
+		}
 	}
 
 	public void setDataType4Trans(final String dataType4Trans) {

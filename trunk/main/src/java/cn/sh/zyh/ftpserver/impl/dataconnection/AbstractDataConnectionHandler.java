@@ -190,55 +190,56 @@ public abstract class AbstractDataConnectionHandler {
 	}
 
 	/**
-	 * Connect to user.
+	 * wait for client's connection.
+	 */
+	public void waitForClient() throws IOException {
+		if (logger.isDebugEnabled()) {
+			logger.debug(CLASS_NAME, "connectToUser",
+					"In passive mode, awaiting data connection from client");
+		}
+
+		this.dataSocket = this.passiveServerSocket.accept();
+
+		if (logger.isDebugEnabled()) {
+			final StringBuffer sb = new StringBuffer("C:");
+			sb.append(dataSocket.getInetAddress().getHostAddress());
+			sb.append(':');
+			sb.append(dataSocket.getPort());
+			sb.append(" to me on:");
+			sb.append(dataSocket.getLocalAddress().getHostAddress());
+			sb.append(':');
+			sb.append(dataSocket.getLocalPort());
+			logger.debug("New Passive Data Connection from " + sb.toString());
+		}
+
+		dataSocket.setKeepAlive(true);
+		dataSocket.setSoTimeout(Configuration.TIME_OUT * 1000);
+	}
+
+	/**
+	 * Connect to client.
 	 * 
 	 * @throws CommandException
 	 *             the command exception
 	 * @throws IOException
 	 *             the IO exception
 	 */
-	protected void connectToUser() throws CommandException, IOException {
-		if (this.passive) {
-
-			if (logger.isDebugEnabled()) {
-				logger.debug(CLASS_NAME, "connectToUser",
-						"In passive mode,awaiting data connection from client");
-			}
-
-			this.dataSocket = this.passiveServerSocket.accept();
-
-			if (logger.isDebugEnabled()) {
-				final StringBuffer sb = new StringBuffer("C:");
-				sb.append(dataSocket.getInetAddress().getHostAddress());
-				sb.append(':');
-				sb.append(dataSocket.getPort());
-				sb.append(" to me on:");
-				sb.append(dataSocket.getLocalAddress().getHostAddress());
-				sb.append(':');
-				sb.append(dataSocket.getLocalPort());
-				logger.debug(CLASS_NAME, "connectToUser",
-						"New Passive Data Connection from " + sb.toString());
-			}
-
-		} else {
-			// Connect to the FTP Client Application if the data port has been
-			// specified
-			if (this.dataPort == -1) {
-				logger.warn(CLASS_NAME, "connectToUser", Messages
-						.getString(MessageKeys.RESP_500_NOT_PORT_SPECI));
-				throw new CommandException(500, Messages
-						.getString(MessageKeys.RESP_500_NOT_PORT_SPECI));
-			}
-			this.dataSocket = new Socket();
-			dataSocket.setReuseAddress(true);
-			// dataSocket.bind(new InetSocketAddress(this.controlHandler
-			// .getClientSocket().getLocalAddress(),
-			// Configuration.LOCAL_PORT));
-			this.dataSocket.connect(new InetSocketAddress(this.dataHost,
-					this.dataPort));
+	public Socket connectToClient(final String dataHost, final int dataPort)
+			throws IOException {
+		// Connect to the FTP Client Application if the data port has been
+		// specified
+		if (dataPort <= 0) {
+			logger.warn("Can't establish data connection: no PORT specified.");
+			return null;
 		}
+
+		final Socket dataSocket = new Socket();
+		dataSocket.setReuseAddress(true);
+		dataSocket.connect(new InetSocketAddress(dataHost, dataPort));
 		dataSocket.setKeepAlive(true);
 		dataSocket.setSoTimeout(Configuration.TIME_OUT * 1000);
+
+		return dataSocket;
 	}
 
 	/**

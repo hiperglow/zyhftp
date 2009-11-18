@@ -51,7 +51,7 @@ public class ResponseCode {
 	/**
 	 * 150 File status okay; about to open data connection.
 	 */
-	public static final int STATUS_OK_OPEN_DATA = 150;
+	public static final int CODE_150_OPEN_DATA_CHANNEL = 150;
 
 	/**
 	 * 200 Command okay.
@@ -154,7 +154,12 @@ public class ResponseCode {
 	/**
 	 * 501 Syntax error in parameters or arguments.
 	 */
-	public static final int SYNTAX_ERROR_PARAMETERS_OR_ARGUMENTS = 501;
+	public static final int CODE_501_SYNTAX_ERROR = 501;
+	
+	/**
+	 * 550 Directory not found
+	 */
+	public static final int CODE_550_DIR_NOT_FOUND = 550;
 
 	/**
 	 * 502 Command not implemented.
