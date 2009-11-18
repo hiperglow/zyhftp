@@ -27,6 +27,15 @@ public abstract class AbstractDataConnectionHandler {
 	/** The debug logger instance. */
 	private final Logger logger = LoggerFactory.getLogger(CLASS_NAME);
 
+	public int listen() throws IOException {
+		final int port = assignPassiveListeningPort();
+		passiveServerSocket = new ServerSocket(port);
+		passiveServerSocket.setSoTimeout(Configuration.TIME_OUT * 1000);
+		listening = true;
+
+		return port;
+	}
+
 	/**
 	 * wait for client's connection.
 	 */
@@ -34,11 +43,10 @@ public abstract class AbstractDataConnectionHandler {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Passive mode, awaiting data connection from client");
 		}
-
-		final int port = assignPassiveListeningPort();
-		final ServerSocket passiveServerSocket = new ServerSocket(port);
-		passiveServerSocket.setSoTimeout(Configuration.TIME_OUT * 1000);
-		listening = true;
+		
+//		if(passiveServerSocket == null) {
+//			//TODO
+//		}
 
 		dataSocket = passiveServerSocket.accept();
 		dataSocket.setKeepAlive(true);

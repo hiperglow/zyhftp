@@ -71,7 +71,7 @@ public class LIST implements ICommand {
 		logger.debug("Specified path info: \n" + filesInfo);
 
 		// connect to client
-		DataConnectionHandler handler = new DataConnectionHandler();
+		DataConnectionHandler handler = session.getDataHandler();
 		if (session.isPassiveMode()) {
 			try {
 				handler.waitForClient();
