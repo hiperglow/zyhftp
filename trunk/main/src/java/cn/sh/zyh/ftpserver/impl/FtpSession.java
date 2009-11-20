@@ -47,7 +47,7 @@ public class FtpSession {
 	private int dataPort = 0;
 
 	private boolean isPassiveMode = false;
-	
+
 	private String currentDirectory = "/";
 
 	/**
@@ -131,10 +131,14 @@ public class FtpSession {
 				MessageKeys.RESP_500_NOT_SUPPORTED, command));
 	}
 
+	public void sendMessage(final String msg) {
+		this.writer.println(msg);
+	}
+
 	public String getClientIP() {
 		return clientSocket.getInetAddress().getHostAddress();
 	}
-	
+
 	public String getHostIP() {
 		return clientSocket.getLocalAddress().getHostAddress();
 	}
@@ -212,7 +216,7 @@ public class FtpSession {
 	}
 
 	public String getDataType4Trans() {
-		if("A".equals(dataType4Trans)) {
+		if ("A".equals(dataType4Trans)) {
 			return "ASCII";
 		} else {
 			return "BINARY";
