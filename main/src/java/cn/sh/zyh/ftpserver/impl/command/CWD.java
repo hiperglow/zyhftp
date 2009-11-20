@@ -21,9 +21,9 @@ public class CWD implements ICommand {
 		}
 
 		String newDir = StringUtils.getNextToken(st, "/");
-		newDir = StringUtils.resolvePath(newDir, session.getCurrentDirectory());
+		newDir = StringUtils.resolvePath(newDir, session.getCurrentDir());
 		final File file = new File(StringUtils.createNativePath(newDir, session
-				.getCurrentDirectory()));
+				.getCurrentDir()));
 		if (!file.exists()) {
 			session.reply(ResponseCode.CODE_550_DIR_NOT_FOUND, newDir
 					+ Messages.getString(MessageKeys.RESP_550_DIR_NOT_FOUND));
@@ -35,7 +35,7 @@ public class CWD implements ICommand {
 			return;
 		}
 
-		session.setCurrentDirectory(newDir);
+		session.setCurrentDir(newDir);
 		session.reply(ResponseCode.REQUESTED_FILE_ACTION_OK, Messages
 				.getString(MessageKeys.RESP_200_COMMAND_OK, COMMAND_NAME));
 	}

@@ -160,6 +160,11 @@ public class ResponseCode {
 	 * 550 Directory not found
 	 */
 	public static final int CODE_550_DIR_NOT_FOUND = 550;
+	
+	/**
+	 * 550 File not found
+	 */
+	public static final int CODE_550_FILE_NOT_FOUND = 550;
 
 	/**
 	 * 502 Command not implemented.

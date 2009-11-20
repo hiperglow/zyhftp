@@ -14,6 +14,8 @@ import cn.sh.zyh.ftpserver.impl.command.PASV;
 import cn.sh.zyh.ftpserver.impl.command.PORT;
 import cn.sh.zyh.ftpserver.impl.command.PWD;
 import cn.sh.zyh.ftpserver.impl.command.QUIT;
+import cn.sh.zyh.ftpserver.impl.command.RETR;
+import cn.sh.zyh.ftpserver.impl.command.STOR;
 import cn.sh.zyh.ftpserver.impl.command.SYST;
 import cn.sh.zyh.ftpserver.impl.command.TYPE;
 import cn.sh.zyh.ftpserver.impl.command.USER;
@@ -63,6 +65,10 @@ public class CommandFactory {
 			return new LIST();
 		} else if (NLST.COMMAND_NAME.equalsIgnoreCase(name)) {
 			return new NLST();
+		} else if (RETR.COMMAND_NAME.equalsIgnoreCase(name)) {
+			return new RETR();
+		} else if (STOR.COMMAND_NAME.equalsIgnoreCase(name)) {
+			return new STOR();
 		}
 
 		return null;

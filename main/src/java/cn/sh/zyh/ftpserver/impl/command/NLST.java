@@ -26,7 +26,7 @@ public class NLST implements ICommand {
 	private final Logger logger = LoggerFactory.getLogger("NLST");
 
 	/**
-	 * NLST comand = dir (user command) <br>
+	 * NLST comand = ls (user command) <br>
 	 * The detail executing result:<br>
 	 * >ls -> list the detail information of current directory.<br>
 	 * >ls - -> reply '501 Syntax error' message.<br>
@@ -35,10 +35,16 @@ public class NLST implements ICommand {
 	 * >ls asf -> reply '550 Directory not found.'.<br>
 	 */
 	public void execute(String line, StringTokenizer st, FtpSession session) {
+		if (!session.isLogin()) {
+			session.reply(ResponseCode.NOT_LOGGED_IN, Messages
+					.getString(MessageKeys.RESP_503_USER_FIRST));
+			return;
+		}
+		
 		// get specifid directory to list
 		String requestedPath = "";
 		final int tokenCount = st.countTokens();
-		final String curDir = session.getCurrentDirectory();
+		final String curDir = session.getCurrentDir();
 
 		if (tokenCount == 0) {
 			requestedPath = StringUtils.createNativePath(curDir, curDir);

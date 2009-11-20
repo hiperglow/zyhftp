@@ -123,9 +123,6 @@ public class MessageKeys {
 	/** The Constant RESP_550_COULD_NOT_DELE. */
 	public static final String RESP_550_COULD_NOT_DELE = "response.550.could.not.dele";
 
-	/** The Constant RESP_550_NO_SUCH_DIR. */
-	public static final String RESP_550_DIR_NOT_FOUND = "response.550.dir.not.found";
-
 	/** The Constant RESP_550_NOT_A_DIR. */
 	public static final String RESP_550_NOT_A_DIR = "response.550.not.a.dir";
 
@@ -143,19 +140,22 @@ public class MessageKeys {
 
 	/** The Constant RESP_500_NOT_PORT_SPECI. */
 	public static final String RESP_500_NOT_PORT_SPECI = "response.500.not.port.specified";
-	
+
 	/** The Constant RESP_500_NOT_PORT_SPECI. */
 	public static final String RESP_501_AFTER_EPSV_ALL = "response.501.after.epsv.all";
-	
+
 	/** The Constant RESP_504_NOT_USE_COMMAND. */
 	public static final String RESP_504_NOT_USE_COMMAND = "response.504.not.use.command";
-	
+
 	/** The Constant RESP_550_PERMISSION_DENIED. */
 	public static final String RESP_550_PERMISSION_DENIED = "response.550.permission.denied";
-	
-	/** The Constant RESP_550_NO_SUCH_FILE. */
-	public static final String RESP_550_NO_SUCH_FILE = "response.550.no.such.file";
-	
+
 	/** The Constant RESP_501_SYNTAX_ERROR. */
 	public static final String RESP_501_SYNTAX_ERROR = "response.501.syntax.error";
+
+	/** The Constant RESP_550_FILE_NOT_FOUND. */
+	public static final String RESP_550_FILE_NOT_FOUND = "response.550.file.not.found";
+
+	/** The Constant RESP_550_NO_SUCH_DIR. */
+	public static final String RESP_550_DIR_NOT_FOUND = "response.550.dir.not.found";
 }
