@@ -36,13 +36,6 @@ public class DataConnectionHandler extends AbstractDataConnectionHandler {
 			throws IOException {
 		InputStream in = null;
 		try {
-			// File file = new File(path);
-			// if (file.exists()) {
-			// // remove the old one - overwrite is ok!
-			// throw new CommandException(550, "File exists in that location.");
-			// file.delete();
-			// }
-
 			fos = new FileOutputStream(file);
 
 			in = representation.getInputStream(dataSocket);

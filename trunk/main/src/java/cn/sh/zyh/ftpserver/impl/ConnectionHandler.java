@@ -112,69 +112,7 @@ public class ConnectionHandler extends Thread {
 			}
 		}
 	}
-	/**
-	 * Handle RETR command.
-	 * 
-	 * @param st
-	 *            the string tokenizer.
-	 * 
-	 * @throws CommandException
-	 *             the command exception
-	 */
-	/*
-	 * private void handleRetr(final StringTokenizer st) throws CommandException {
-	 * final String filename = getNextToken(st, "");
-	 * 
-	 * if ((this.userAuthInfo.isAuthMode() && !this.userAuthInfo
-	 * .isLoginSuccess()) || (this.isAuthModeLoginSuccess &&
-	 * this.userAuthInfo.isAdminMode() && "prnlog" .equals(filename))) {
-	 * reply(ResponseCode.REQUESTED_ACTION_NOT_TAKEN_550, Messages
-	 * .getString(MessageKeys.RESP_550_NO_SUCH_FILE, filename)); return; } else {
-	 * final String virtualFile = this.requestHandler.getVirtualFile( filename,
-	 * this.userAuthInfo); if (null == virtualFile) {
-	 * reply(ResponseCode.REQUESTED_ACTION_NOT_TAKEN_550, Messages
-	 * .getString(MessageKeys.RESP_550_NO_SUCH_FILE, filename)); return; } else {
-	 * this.dataHandler.sendFile(filename, virtualFile); reply(226, Messages
-	 * .getString(MessageKeys.RESP_226_TRANSFER_COMPLETE)); } } }
-	 * 
-	 *//**
-		 * Handle STOR command.
-		 * 
-		 * @param line
-		 *            the print option from the put user command.
-		 * 
-		 * @throws CommandException
-		 *             the command exception
-		 */
-	/*
-	 * private void handleStor(final StringTokenizer st) throws CommandException {
-	 * 
-	 * String newOption = getNextToken(st, "");
-	 * 
-	 * final FTPPrintConfigurationInfo configurationInfo = new
-	 * FTPPrintConfigurationInfo(); Session session = null; // when print option
-	 * has not set, use cd option if
-	 * (!this.optionBuilder.checkPrintOption(newOption)) { // set DocumentName
-	 * as file name configurationInfo.setDocumentName(newOption); newOption =
-	 * this.cdOption; } else { configurationInfo.setDocumentName(""); newOption =
-	 * this.optionBuilder.truncatePrintOption(newOption); } // get the session
-	 * which is used to excute the print operation. if (isAuthModeLoginSuccess) {
-	 * session = this.userAuthInfo.getLoginSession(); } else { session =
-	 * this.userAuthInfo.getOperationSession(); }
-	 * 
-	 * if (this.userAuthInfo.isAuthMode()) { newOption =
-	 * this.optionBuilder.getPrintOption(newOption); } // set the print job
-	 * preference. this.setPrintConfigruationInfo(configurationInfo, newOption);
-	 * 
-	 * if (this.dataHandler.receiveFile(session, configurationInfo,
-	 * this.userAuthInfo)) { reply(226, Messages
-	 * .getString(MessageKeys.RESP_226_TRANSFER_COMPLETE)); return; }
-	 * 
-	 * if (!(this.userAuthInfo.isAuthMode() && this.userAuthInfo.isAdminMode())) {
-	 * reply(ResponseCode.REQUESTED_ACTION_NOT_TAKEN_550, "Requested action not
-	 * taken"); } }
-	 * 
-	 */
+	
 	/**
 	 * Handle HELP command.
 	 * 

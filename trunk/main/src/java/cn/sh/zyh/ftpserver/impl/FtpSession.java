@@ -239,11 +239,11 @@ public class FtpSession {
 		this.isPassiveMode = isPassiveMode;
 	}
 
-	public String getCurrentDirectory() {
+	public String getCurrentDir() {
 		return currentDirectory;
 	}
 
-	public void setCurrentDirectory(String currentDirectory) {
+	public void setCurrentDir(String currentDirectory) {
 		this.currentDirectory = currentDirectory;
 	}
 }
