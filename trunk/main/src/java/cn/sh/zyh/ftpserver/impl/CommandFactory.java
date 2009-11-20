@@ -5,6 +5,7 @@ import cn.sh.zyh.ftpserver.impl.command.CWD;
 import cn.sh.zyh.ftpserver.impl.command.DELE;
 import cn.sh.zyh.ftpserver.impl.command.EPRT;
 import cn.sh.zyh.ftpserver.impl.command.EPSV;
+import cn.sh.zyh.ftpserver.impl.command.HELP;
 import cn.sh.zyh.ftpserver.impl.command.LIST;
 import cn.sh.zyh.ftpserver.impl.command.LPRT;
 import cn.sh.zyh.ftpserver.impl.command.LPSV;
@@ -70,8 +71,10 @@ public class CommandFactory {
 			return new RETR();
 		} else if (STOR.COMMAND_NAME.equalsIgnoreCase(name)) {
 			return new STOR();
-		}else if (DELE.COMMAND_NAME.equalsIgnoreCase(name)) {
+		} else if (DELE.COMMAND_NAME.equalsIgnoreCase(name)) {
 			return new DELE();
+		} else if (HELP.COMMAND_NAME.equalsIgnoreCase(name)) {
+			return new HELP();
 		}
 
 		return null;
