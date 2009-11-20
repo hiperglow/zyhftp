@@ -13,6 +13,6 @@ public class PWD implements ICommand {
 
 	public void execute(String line, StringTokenizer st, FtpSession session) {
 		session.reply(ResponseCode.PATHNAME_CREATED, Messages.getString(
-				MessageKeys.RESP_257_PWD, COMMAND_NAME));
+				MessageKeys.RESP_257_PWD, session.getCurrentDirectory()));
 	}
 }

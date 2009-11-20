@@ -7,6 +7,7 @@ import cn.sh.zyh.ftpserver.impl.command.EPSV;
 import cn.sh.zyh.ftpserver.impl.command.LIST;
 import cn.sh.zyh.ftpserver.impl.command.LPRT;
 import cn.sh.zyh.ftpserver.impl.command.LPSV;
+import cn.sh.zyh.ftpserver.impl.command.NLST;
 import cn.sh.zyh.ftpserver.impl.command.NOOP;
 import cn.sh.zyh.ftpserver.impl.command.PASS;
 import cn.sh.zyh.ftpserver.impl.command.PASV;
@@ -60,6 +61,8 @@ public class CommandFactory {
 			return new EPSV();
 		} else if (LIST.COMMAND_NAME.equalsIgnoreCase(name)) {
 			return new LIST();
+		} else if (NLST.COMMAND_NAME.equalsIgnoreCase(name)) {
+			return new NLST();
 		}
 
 		return null;
