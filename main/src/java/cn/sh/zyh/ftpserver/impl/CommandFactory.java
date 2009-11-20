@@ -2,6 +2,7 @@ package cn.sh.zyh.ftpserver.impl;
 
 import cn.sh.zyh.ftpserver.impl.command.ABOR;
 import cn.sh.zyh.ftpserver.impl.command.CWD;
+import cn.sh.zyh.ftpserver.impl.command.DELE;
 import cn.sh.zyh.ftpserver.impl.command.EPRT;
 import cn.sh.zyh.ftpserver.impl.command.EPSV;
 import cn.sh.zyh.ftpserver.impl.command.LIST;
@@ -69,6 +70,8 @@ public class CommandFactory {
 			return new RETR();
 		} else if (STOR.COMMAND_NAME.equalsIgnoreCase(name)) {
 			return new STOR();
+		}else if (DELE.COMMAND_NAME.equalsIgnoreCase(name)) {
+			return new DELE();
 		}
 
 		return null;

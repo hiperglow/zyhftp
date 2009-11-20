@@ -1,17 +1,8 @@
-///////////////////////////////////////////////////////////////////
-// Copyright:2009 by RICOH COMPANY, LTD. All Rights Reserved
-///////////////////////////////////////////////////////////////////
 package cn.sh.zyh.ftpserver.impl.core;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The Class FtpCommandSupportDefine.
- * 
- * @author LianhaoMa
- * @version 1.0
- */
 public class FTPCommandHelpDefine {
 
 	/**
@@ -318,7 +309,7 @@ public class FTPCommandHelpDefine {
 	/**
 	 * The ftp command list.
 	 */
-	private List ftpCommandList = new ArrayList();
+	private List<String[]> ftpCommandList = new ArrayList<String[]>();
 
 	/**
 	 * Gets the ftp command list.
